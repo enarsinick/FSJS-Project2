@@ -2,45 +2,17 @@
 Treehouse Techdegree:
 FSJS project 2 - List Filter and Pagination
 ******************************************/
-   
-// Study guide for this project - https://drive.google.com/file/d/1OD1diUsTMdpfMDv677TfL1xO2CEkykSz/view?usp=sharing
 
-
-/*** 
-   Add your global variables that store the DOM elements you will 
-   need to reference and/or manipulate. 
-   
-   But be mindful of which variables should be global and which 
-   should be locally scoped to one of the two main functions you're 
-   going to create. A good general rule of thumb is if the variable 
-   will only be used inside of a function, then it can be locally 
-   scoped to that function.
-***/
 const pageDiv = document.querySelector('.page');
 const studentList = document.querySelectorAll('.student-item');
 const studentsToShow = 10;
 
-
-
-
-/*** 
-   Create the `showPage` function to hide all of the items in the 
-   list except for the ten you want to show.
-
-   Pro Tips: 
-     - Keep in mind that with a list of 54 students, the last page 
-       will only display four.
-     - Remember that the first student has an index of 0.
-     - Remember that a function `parameter` goes in the parens when 
-       you initially define the function, and it acts as a variable 
-       or a placeholder to represent the actual function `argument` 
-       that will be passed into the parens later when you call or 
-       "invoke" the function 
-***/
-
+// Function to display certain amount of people on a page
 const showPage = (list, page) => {
+   // Creating the indexes for the pagination feature
    const startIndex = (page * studentsToShow) - studentsToShow;
-   const endIndex = page * studentsToShow;
+   const endIndex = (page * studentsToShow) - 1;
+   // Loop through all list elements and display whatever is within the indexes
    for(let i = 0; i < list.length; i++) {
       if(i >= startIndex && i <= endIndex) {
          list[i].style.display = 'block';
@@ -50,21 +22,20 @@ const showPage = (list, page) => {
    }
 }
 
-/*** 
-   Create the `appendPageLinks function` to generate, append, and add 
-   functionality to the pagination buttons.
-***/
-
+// Function that adds anchor links to the page to navigate through different pages
 const appendPageLinks = (list) => {
+   // Calc total pages
    let totalPages = list.length / studentsToShow;
    totalPage = parseInt(totalPages);
 
+   // Dynamically creating elements for the page
    let div = document.createElement('div');
    div.classList.add('pagination');
    pageDiv.appendChild(div);
    let ul = document.createElement('ul');
    div.appendChild(ul);
    
+   // Adding links depending on the amount of pages needed
    for(let i = 1; i < totalPages; i++) {
       let li = document.createElement('li');
       let anchor = document.createElement('a');
@@ -72,10 +43,44 @@ const appendPageLinks = (list) => {
       li.appendChild(anchor);
       ul.appendChild(li);
    }
+   ul.firstElementChild.firstElementChild.classList.add('active');
+   const pageLinks = ul.querySelectorAll('a');
+
+   // Loop over all page links and add event listeners to them
+   for(let j = 0; j < pageLinks.length; j++) {
+      pageLinks[j].addEventListener('click', (e) => {
+         // Remove all active classes
+         for (let f = 0; f < pageLinks.length; f++) {
+            if(pageLinks[f].classList.contains('active')) {
+               pageLinks[f].classList.remove('active');
+            }
+            event.target.classList.add('active');
+            let pageNum = event.target.innerHTML;
+            pageNum = parseInt(pageNum);
+            showPage(studentList, pageNum);
+         }
+      })
+   }
 }
 
+const appendSearch = () => {
+   const pageHeader = document.querySelector('.page-header');
+   const searchDiv = document.createElement('div');
+   searchDiv.classList.add('student-search');
+   const input = document.createElement('input');
+   input.placeholder = 'Search for students...';
+   const button = document.createElement('button');
+   button.textContent = 'Search';
+   pageHeader.append(searchDiv);
+   searchDiv.append(input);
+   searchDiv.append(button);
+
+   button.addEventListener('click', () => {
+      console.log('button clicked');
+   })
+}
+
+// calling the functions
+showPage(studentList, 1);
 appendPageLinks(studentList);
-
-
-
-// Remember to delete the comments that came with this file, and replace them with your own code comments.
+appendSearch();
