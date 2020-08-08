@@ -36,14 +36,17 @@ const appendPageLinks = (list) => {
    div.appendChild(ul);
    
    // Adding links depending on the amount of pages needed
-   for(let i = 1; i < totalPages; i++) {
+   for(let i = 0; i < totalPages; i++) {
       let li = document.createElement('li');
       let anchor = document.createElement('a');
-      anchor.innerHTML = i;
+      anchor.innerHTML = (i + 1);
       li.appendChild(anchor);
       ul.appendChild(li);
    }
-   ul.firstElementChild.firstElementChild.classList.add('active');
+   if (ul.childNodes.length > 0) {
+      ul.firstElementChild.firstElementChild.classList.add('active');
+   }
+   
    const pageLinks = ul.querySelectorAll('a');
 
    // Loop over all page links and add event listeners to them
@@ -63,7 +66,7 @@ const appendPageLinks = (list) => {
    }
 }
 
-const appendSearch = () => {
+const appendSearch = (list) => {
    const pageHeader = document.querySelector('.page-header');
    const searchDiv = document.createElement('div');
    searchDiv.classList.add('student-search');
@@ -76,11 +79,54 @@ const appendSearch = () => {
    searchDiv.append(button);
 
    button.addEventListener('click', () => {
-      console.log('button clicked');
+      let searchValue = input.value.toUpperCase();
+      let searchResults = [];
+      for(let i = 0; i < list.length; i++) {
+         let studentName = list[i].firstElementChild.childNodes[3].innerHTML.toUpperCase()
+         if(studentName.indexOf(searchValue) > -1) {
+            studentList[i].style.display = '';
+            searchResults.push(studentList[i]);
+         } else {
+            studentList[i].style.display = 'none';
+         }
+      }
+      document.querySelector('.pagination').remove();
+      showPage(list, (searchResults.length / studentsToShow));
+      appendPageLinks(searchResults);
+
+      if(searchResults.length === 0) {
+         console.log('There isnt anything here');
+      }
+   })
+
+   input.addEventListener('keyup', () => {
+      let searchValue = input.value.toUpperCase();
+      let searchResults = [];
+      for(let i = 0; i < list.length; i++) {
+         let studentName = list[i].firstElementChild.childNodes[3].innerHTML.toUpperCase()
+         if(studentName.indexOf(searchValue) > -1) {
+            studentList[i].style.display = '';
+            searchResults.push(studentList[i]);
+         } else {
+            studentList[i].style.display = 'none';
+         }
+      }
+      document.querySelector('.pagination').remove();
+      showPage(list, (searchResults.length / studentsToShow));
+      appendPageLinks(searchResults);
+
+      if(searchResults.length === 0) {
+         let message = document.createElement('h2');
+         message.innerHTML = 'No results';
+         message.classList.add('no-result');
+         pageDiv.append(message);
+      }
    })
 }
+
+
 
 // calling the functions
 showPage(studentList, 1);
 appendPageLinks(studentList);
-appendSearch();
+appendSearch(studentList);
