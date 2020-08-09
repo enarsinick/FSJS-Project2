@@ -5,6 +5,10 @@ FSJS project 2 - List Filter and Pagination
 
 const pageDiv = document.querySelector('.page');
 const studentList = document.querySelectorAll('.student-item');
+let noResultsDiv = document.createElement('div');
+let h1 = document.createElement('h1');
+noResultsDiv.append(h1);
+pageDiv.append(noResultsDiv);
 const studentsToShow = 10;
 
 // Function to display certain amount of people on a page
@@ -66,7 +70,11 @@ const appendPageLinks = (list) => {
    }
 }
 
+
+// Function to add search ability to the page
 const appendSearch = (list) => {
+
+   // Creating and appending relevant HTML elements
    const pageHeader = document.querySelector('.page-header');
    const searchDiv = document.createElement('div');
    searchDiv.classList.add('student-search');
@@ -78,9 +86,11 @@ const appendSearch = (list) => {
    searchDiv.append(input);
    searchDiv.append(button);
 
+   // Click event listener for the button
    button.addEventListener('click', () => {
       let searchValue = input.value.toUpperCase();
       let searchResults = [];
+      // Loop through the list and check if search value is in it
       for(let i = 0; i < list.length; i++) {
          let studentName = list[i].firstElementChild.childNodes[3].innerHTML.toUpperCase()
          if(studentName.indexOf(searchValue) > -1) {
@@ -91,14 +101,18 @@ const appendSearch = (list) => {
          }
       }
       document.querySelector('.pagination').remove();
-      showPage(list, (searchResults.length / studentsToShow));
+      showPage(searchResults, (searchResults.length / studentsToShow));
       appendPageLinks(searchResults);
 
-      if(searchResults.length === 0) {
-         console.log('There isnt anything here');
+      // Add or remove text inside the no results h1 within the page
+      if (searchResults.length > 0 && noResultsDiv.childNodes.length > 0) {
+         h1.innerHTML = ' ';
+      } else {
+         h1.innerHTML = 'No results';
       }
    })
 
+   // Key up event listener for the input field
    input.addEventListener('keyup', () => {
       let searchValue = input.value.toUpperCase();
       let searchResults = [];
@@ -112,14 +126,13 @@ const appendSearch = (list) => {
          }
       }
       document.querySelector('.pagination').remove();
-      showPage(list, (searchResults.length / studentsToShow));
+      showPage(searchResults, (searchResults.length / studentsToShow));
       appendPageLinks(searchResults);
 
-      if(searchResults.length === 0) {
-         let message = document.createElement('h2');
-         message.innerHTML = 'No results';
-         message.classList.add('no-result');
-         pageDiv.append(message);
+      if (searchResults.length > 0 && noResultsDiv.childNodes.length > 0) {
+         h1.innerHTML = ' ';
+      } else {
+         h1.innerHTML = 'No results';
       }
    })
 }
